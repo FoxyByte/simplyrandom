@@ -2,6 +2,4 @@ module simplyrandom.go
 
 go 1.15
 
-require (
-	github.com/pborman/uuid v1.2.1 // indirect
-)
+require github.com/pborman/uuid v1.2.1
