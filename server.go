@@ -6,13 +6,9 @@ import (
 	"os"
 	"strconv"
 	"sync"
-
-	"github.com/sgade/randomorg"
 )
 
-var (
-	apiKey = os.Getenv("APIKEY")
-)
+var apiKey = os.Getenv("APIKEY")
 
 func getRandoms(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -32,26 +28,22 @@ func getRandoms(w http.ResponseWriter, r *http.Request) {
 
 	output := `
 	{
-		"stddev": %f
+	"stddev": %f
 	"data": %d 
 	}`
 
 	var valuesAll []int64
 	wg := sync.WaitGroup{}
+
 	if req <= 10 {
 		for i := 0; i < req; i++ {
 			wg.Add(1)
 			go func(len int) {
-				random := randomorg.NewRandom(apiKey)
-				value, err := random.GenerateIntegers(len, 0, 10)
+				random := newRandom(apiKey)
+				value, err := random.getIntegers(len)
 				if err != nil {
 					fmt.Println(err)
 				}
-				output := `
-				{
-					"stddev": %f
-		"data": %d 
-				}`
 				stdDev := standardDev(value)
 				valuesAll = append(valuesAll, value...)
 				w.Write([]byte(fmt.Sprintf(output, stdDev, value)))
@@ -64,5 +56,4 @@ func getRandoms(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Write([]byte(fmt.Sprintf("Sorry but 10 requests in the max")))
 	}
-
 }
